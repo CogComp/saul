@@ -24,6 +24,7 @@ import edu.illinois.cs.cogcomp.saul.lbjrelated.LBJLearnerEquivalent
 import edu.illinois.cs.cogcomp.saul.parser.{ IterableToLBJavaParser, LBJavaParserToIterable }
 import edu.illinois.cs.cogcomp.saul.test.TestReal
 import edu.illinois.cs.cogcomp.saul.util.Logging
+import me.tongfei.progressbar.ProgressBar
 
 import scala.reflect.ClassTag
 
@@ -226,24 +227,28 @@ abstract class Learnable[T <: AnyRef](val node: Node[T], val parameters: Paramet
     logger.debug(classifier.getExtractor.getCompositeChildren.toString)
     logger.debug(classifier.getLabeler.toString)
     logger.info(s"Learnable: Learn with data of size ${data.size}")
-    logger.info(s"Training: $iteration iterations remain.")
 
     isTraining = true
+    val pb = new ProgressBar("Training", iteration)
+    pb.start()
 
     (iteration to 1 by -1).foreach(remainingIteration => {
-      if (remainingIteration % 10 == 0)
-        logger.info(s"Training: $remainingIteration iterations remain.")
 
       node.clearPropertyCache()
       data.foreach(classifier.learn)
+      pb.step()
     })
 
+    pb.stop()
     classifier.doneLearning()
     isTraining = false
   }
 
   def learnWithDerivedInstances(numIterations: Int, featureVectors: Iterable[FeatureVector]): Unit = {
     isTraining = true
+    val pb = new ProgressBar("Training", numIterations)
+    pb.start()
+
     val propertyNameSet = feature.map(_.name).toSet
     (0 until numIterations).foreach { _ =>
       featureVectors.foreach {
@@ -262,7 +267,9 @@ abstract class Learnable[T <: AnyRef](val node: Node[T], val parameters: Paramet
           }
           classifier.learn(featureVector)
       }
+      pb.step()
     }
+    pb.stop()
     classifier.doneLearning()
     isTraining = false
   }

@@ -66,7 +66,8 @@ lazy val commonSettings = Seq(
     "com.gurobi" % "gurobi" % "6.0",
     "org.apache.commons" % "commons-math3" % "3.0",
     "org.scalatest" % "scalatest_2.11" % "2.2.4",
-    "ch.qos.logback" % "logback-classic" % "1.1.7"
+    "ch.qos.logback" % "logback-classic" % "1.1.7",
+    "me.tongfei" % "progressbar" % "0.5.5"
   ),
   fork := true,
   connectInput in run := true,
